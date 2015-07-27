@@ -6,20 +6,6 @@ CommentBox
 ###
 
 
-###TODO: 
-write array with json-like data
-pass data to CL
-map Ct with data
-###
-
-
-data = [
-  {author: 'John Doe', text: 'Ontrinsicly myocardinate intermandated outsourcing rather than bricks portals.'}
-  {author: 'Jane Doe', text: 'Distinctively deploy *diverse functionalities* before just in time services.'}
-  {author: 'Ann Kelly', text: 'ntrinsicly negotiate exceptional synergy after wireless e-commerce.'}
-]
-
-
 ###---------------- Comment ----------------###
 Comment = React.createClass(
   render: ->
@@ -36,10 +22,11 @@ Comment = React.createClass(
 ###---------------- CommentList ----------------###
 CommentList = React.createClass(
   render: ->
-    commentNodes = @props.comments.map((comment, i) ->
+    commentData = @props.data.comments
+    commentNodes = commentData?.map((comment, i) ->
       <Comment key={i} author={comment.author}>{comment.text}</Comment>
     )
-    
+
     <ul>
       {commentNodes}
     </ul>
@@ -57,14 +44,31 @@ CommentForm = React.createClass(
 
 ###---------------- CommentBox ----------------###
 CommentBox = React.createClass(
+  getInitialState: ->
+    data: []
+
+  componentDidMount: ->
+    $.ajax(
+      url: @props.url
+      dataType: 'json'
+      cache: off
+      success: ((data) ->
+        @setState(data: data)
+      ).bind(this)
+
+      error: ((xhr, status, err) ->
+        console.error @props.url, status, err.toString()
+      ).bind(this)
+    )
+
   render: ->
     <div clasName="commentBox">
       <h1>Comments</h1>
-      <CommentList comments={this.props.data}/>
+      <CommentList data={this.state.data}/>
       <CommentForm />
     </div>
 )
 
 
 appContainer = document.getElementById('app')
-React.render(<CommentBox data={data}/>, appContainer)
+React.render(<CommentBox url="public/comments.json"/>, appContainer)

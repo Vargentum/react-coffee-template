@@ -1,7 +1,24 @@
-NeatComponent = React.createClass
+### app structure:
+CommentBox
+  CommentList
+    Comment
+  CommentForm
+###
+
+
+###TODO: 
+create CommentBox
+render some markup
+Render comment box
+###
+
+CommentBox = React.createClass(
   render: ->
-    <div className="neat-component">
-      {<h1>A Component is I</h1> if @props.showTitle}
-      <hr />
-      {<p key={n}>This line has been printed {n} times</p> for n in [1..5]}
+    <div clasName="commentBox">
+      Comment Box
     </div>
+)
+
+
+appContainer = document.getElementById('app')
+React.render(<CommentBox/>, appContainer)

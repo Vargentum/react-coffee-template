@@ -7,16 +7,26 @@ CommentBox
 
 
 ###TODO: 
-create CommentList and CommentForm
-render them inside CommentBox
+
 ###
+
+
+###---------------- Comment ----------------###
+Comment = React.createClass(
+  render: ->
+    <li>
+      <h2>{this.props.author}</h2>
+      {this.props.children}
+    </li>
+)
 
 
 ###---------------- CommentList ----------------###
 CommentList = React.createClass(
   render: ->
     <ul clasName="commentList">
-
+      <Comment author="John Doe">Ontrinsicly myocardinate intermandated outsourcing rather than bricks portals.</Comment>
+      <Comment author="Jane Doe">Distinctively deploy diverse functionalities before just in time services.</Comment>
     </ul>
 )
 

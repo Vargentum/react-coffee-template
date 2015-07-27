@@ -44,10 +44,7 @@ CommentForm = React.createClass(
 
 ###---------------- CommentBox ----------------###
 CommentBox = React.createClass(
-  getInitialState: ->
-    data: []
-
-  componentDidMount: ->
+  fetchDataFromServer: ->
     $.ajax(
       url: @props.url
       dataType: 'json'
@@ -61,6 +58,13 @@ CommentBox = React.createClass(
       ).bind(this)
     )
 
+  getInitialState: ->
+    data: []
+
+  componentDidMount: ->
+    ###Try to use WebSockets here###
+    setTimeout(@fetchDataFromServer(), @props.pollInterval)
+
   render: ->
     <div clasName="commentBox">
       <h1>Comments</h1>
@@ -71,4 +75,4 @@ CommentBox = React.createClass(
 
 
 appContainer = document.getElementById('app')
-React.render(<CommentBox url="public/comments.json"/>, appContainer)
+React.render(<CommentBox url="public/comments.json" pollInterval={5000}/>, appContainer)

@@ -63,6 +63,7 @@ CommentBox = React.createClass(
 
   componentDidMount: ->
     ###Try to use WebSockets here###
+    this.fetchDataFromServer()
     setInterval(@fetchDataFromServer, @props.pollInterval)
 
   render: ->

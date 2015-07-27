@@ -7,16 +7,21 @@ CommentBox
 
 
 ###TODO: 
-
+convert comment body to string then convert with marked to html
+sanitize this html with marked
+than insert with dangerouslyInsert
 ###
 
 
 ###---------------- Comment ----------------###
 Comment = React.createClass(
   render: ->
+    rawMarkup = marked(@props.children.toString(),
+      sanitize: on
+    )
     <li>
       <h2>{this.props.author}</h2>
-      {this.props.children}
+      {<div dangerouslySetInnerHTML={__html: rawMarkup} />}
     </li>
 )
 
@@ -26,7 +31,7 @@ CommentList = React.createClass(
   render: ->
     <ul clasName="commentList">
       <Comment author="John Doe">Ontrinsicly myocardinate intermandated outsourcing rather than bricks portals.</Comment>
-      <Comment author="Jane Doe">Distinctively deploy diverse functionalities before just in time services.</Comment>
+      <Comment author="Jane Doe">Distinctively deploy *diverse functionalities* before just in time services.</Comment>
     </ul>
 )
 

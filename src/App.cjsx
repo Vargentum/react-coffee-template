@@ -22,23 +22,60 @@ Comment = React.createClass(
 ###---------------- CommentList ----------------###
 CommentList = React.createClass(
   render: ->
-    commentData = @props.data.comments
-    commentNodes = commentData?.map((comment, i) ->
+    commentNodes = @props.data?.map((comment, i) ->
       <Comment key={i} author={comment.author}>{comment.text}</Comment>
     )
 
-    <ul>
+    <ul className="mdl-cell  mdl-cell--8-col">
       {commentNodes}
     </ul>
 )
 
 ###---------------- CommentForm ----------------###
 CommentForm = React.createClass(
+  getInitialState: ->
+    comment: {}
+
+  clearInputData: ->
+    @setState(
+      comment.author = ''
+      comment.text = ''
+    )
+
+  fetchFormData: ->
+    author = React.findDOMNode(@refs.author).value.trim()
+    text = React.findDOMNode(@refs.text).value.trim()
+
+    # validate
+    if not author or not text
+      return
+
+    @props.onFormSubmit(
+      author: author
+      text: text
+    )
+
+
   render: ->
-    <form>
-      <textarea name="newComment" placeholder="Leave a feedback..." />
-      <button>Post</button>
-    </form>
+    <div className="mdl-cell  mdl-cell--4-col">
+      <div className="mdl-textfield mdl-js-textfield textfield-demo">
+        <input className="mdl-textfield__input" type="text" id="comment-author"
+               ref="author"/>
+        <label className="mdl-textfield__label" htmlFor="comment-author">Your Name</label>
+      </div>
+      <div className="mdl-textfield mdl-js-textfield textfield-demo">
+        <textarea className="mdl-textfield__input" type="text" id="comment-text" 
+                  ref="text"/>
+        <label className="mdl-textfield__label" htmlFor="comment-text">Your commentary</label>
+      </div>
+      
+      <button className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+              onClick={this.fetchFormData}>
+        Post feedback
+      </button>
+
+      <p>{this.state.status}</p>
+    </div>
 )
 
 
@@ -58,6 +95,33 @@ CommentBox = React.createClass(
       ).bind(this)
     )
 
+  postComment: (comment) ->
+    # optimistic update (before the)
+    comments = @state.data
+    updatedComments = comments.concat(comment)
+    @setState data: updatedComments
+
+    console.log JSON.stringify(comment)
+    $.ajax(
+      url: @props.url
+      method: 'POST'
+      dataType: 'json'
+      contentType: "application/json"
+      processData: off
+      data: JSON.stringify(comment)
+      success: ((data) ->
+        @setState data: data
+        console.log 'posted "#{comment.text}" as #{comment.author}'
+      ).bind(this)
+
+      error: ((xhr, status, err) ->
+        @setState(
+          status: 'Request failed in reason of #{err}. Status is #{status}'
+        )
+      ).bind(this)
+    )
+
+
   getInitialState: ->
     data: []
 
@@ -67,10 +131,12 @@ CommentBox = React.createClass(
     setInterval(@fetchDataFromServer, @props.pollInterval)
 
   render: ->
-    <div clasName="commentBox">
+    <div>
       <h1>Comments</h1>
-      <CommentList data={this.state.data}/>
-      <CommentForm />
+      <div className="mdl-grid">
+        <CommentList data={this.state.data}/>
+        <CommentForm onFormSubmit={this.postComment}/>
+      </div>
     </div>
 )
 

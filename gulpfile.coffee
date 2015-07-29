@@ -20,6 +20,7 @@ gulp.task 'server', ->
     .pipe($.serverLivereload(
       host: config.server.host
       port: config.server.port
+      log: 'debug'
     ))
 
 
